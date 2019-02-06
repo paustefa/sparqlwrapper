@@ -864,7 +864,7 @@ class SPARQLWrapper(object):
 
         return request
 
-    def _query(self):
+    def _query(self, p):
         """Internal method to execute the query. Returns the output of the
         C{urllib2.urlopen} method of the standard Python library
 
@@ -879,9 +879,9 @@ class SPARQLWrapper(object):
 
         try:
             if self.timeout:
-                response = urlopener(request, timeout=self.timeout)
+                response = urlopener(request, timeout=self.timeout, proxies=p)
             else:
-                response = urlopener(request)
+                response = urlopener(request, proxies=p)
             return response, self.returnFormat
         except urllib2.HTTPError, e:
             if e.code == 400:
@@ -897,7 +897,7 @@ class SPARQLWrapper(object):
             else:
                 raise e
 
-    def query(self):
+    def query(self, p):
         """
             Execute the query.
             Exceptions can be raised if either the URI is wrong or the HTTP sends back an error (this is also the
@@ -915,7 +915,7 @@ class SPARQLWrapper(object):
             @return: query result
             @rtype: L{QueryResult} instance
         """
-        return QueryResult(self._query())
+        return QueryResult(self._query(p))
 
     def queryAndConvert(self):
         """Macro like method: issue a query and return the converted results.
